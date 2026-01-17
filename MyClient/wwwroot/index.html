@@ -48,7 +48,7 @@
         // Получение всех пользователей
         async function getUsers() {
             // отправляет запрос и получаем ответ
-            const response = await fetch("/api/users", {
+            const response = await fetch("https://localhost:7234/api/users", {
                 method: "GET",
                 headers: { "Accept": "application/json" }
             });
@@ -63,7 +63,7 @@
         }
         // Получение одного пользователя
         async function getUser(id) {
-            const response = await fetch(`/api/users/${id}`, {
+            const response = await fetch(`https://localhost:7234/api/users/${id}`, {
                 method: "GET",
                 headers: { "Accept": "application/json" }
             });
@@ -83,7 +83,7 @@
         // Добавление пользователя
         async function createUser(userName, userAge, userGender) {
 
-            const response = await fetch("api/users", {
+            const response = await fetch("https://localhost:7234/api/users", {
                 method: "POST",
                 headers: { "Accept": "application/json", "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -103,7 +103,7 @@
         }
         // Изменение пользователя
         async function editUser(userId, userName, userAge, userGender) {
-            const response = await fetch("api/users", {
+            const response = await fetch("https://localhost:7234/api/users", {
                 method: "PUT",
                 headers: { "Accept": "application/json", "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -124,7 +124,7 @@
         }
         // Удаление пользователя
         async function deleteUser(id) {
-            const response = await fetch(`/api/users/${id}`, {
+            const response = await fetch(`https://localhost:7234/api/users/${id}`, {
                 method: "DELETE",
                 headers: { "Accept": "application/json" }
             });
