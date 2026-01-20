@@ -1,4 +1,6 @@
 <Solution>
-  <Project Path="MyClient/MyClient.csproj" />
+  <Project Path="MyClient/MyClient.csproj">
+    <BuildDependency Project="MyServer/MyServer.csproj" />
+  </Project>
   <Project Path="MyServer/MyServer.csproj" />
 </Solution>

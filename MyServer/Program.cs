@@ -32,7 +32,7 @@ app.MapGet("/api/users", async (MyAppContext context) =>
     return Results.Json(p);
 });
 
-app.MapGet("/api/users/{id}", (MyAppContext db, string id) =>
+app.MapGet("/api/users/{id}", async (MyAppContext db, string id) =>
 {
     // получаем пользователя по id
     Person? person = db.Persons.FirstOrDefault(u => u.Id == id);
@@ -57,13 +57,15 @@ app.MapDelete("/api/users/{id}", (MyAppContext db, string id) =>
     return Results.Json(person);
 });
 
-app.MapPost("/api/users", (MyAppContext db, Person person) => {
+app.MapPost("/api/users", async (MyAppContext db, Person person) => {
 
     // устанавливаем id для нового пользователя
     person.Id = Guid.NewGuid().ToString();
 
     // добавляем пользователя в список
     db.Persons.Add(person);
+
+    await db.SaveChangesAsync();
 
     return person;
 });
