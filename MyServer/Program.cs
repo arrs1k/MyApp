@@ -23,7 +23,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // добавляем контекст ApplicationContext в качестве сервиса в приложение
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection));
@@ -34,7 +34,7 @@ app.UseCors("AllowAll");
 
 //app.UseDefaultFiles();
 //app.UseStaticFiles();
-
+app.MapGet("/", (ApplicationContext db) => db.Users.ToList());
 app.MapGet("/api/users", () => users);
 
 app.MapGet("/api/users/{id}", (string id) =>
