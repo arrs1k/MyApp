@@ -2,14 +2,7 @@
 
 using MyServer.Models;
 using Microsoft.EntityFrameworkCore;
-
-// начальные данные
-List<Person> users = new List<Person> { };
-//{
-  //  new() { Id = Guid.NewGuid().ToString(), Name = "Tom", Age = 37 },
-    //new() { Id = Guid.NewGuid().ToString(), Name = "Bob", Age = 41 },
-    //new() { Id = Guid.NewGuid().ToString(), Name = "Sam", Age = 24 }
-//};
+using MyServer.Data;
 
 var builder = WebApplication.CreateBuilder();
 
@@ -23,57 +16,57 @@ builder.Services.AddCors(options =>
     });
 });
 
-string connection = builder.Configuration.GetConnectionString("DefaultConnection");
+string connection = builder.Configuration.GetConnectionString("DefaultConnection"); //+
 
 // добавляем контекст ApplicationContext в качестве сервиса в приложение
-builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection));
+builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection)); //+
 
 var app = builder.Build();
 
 app.UseCors("AllowAll");
 
-//app.UseDefaultFiles();
-//app.UseStaticFiles();
-app.MapGet("/", (ApplicationContext db) => db.Users.ToList());
-app.MapGet("/api/users", () => users);
+app.MapGet("/api/users", (ApplicationContext db) => db.Persons.ToArray());
 
-app.MapGet("/api/users/{id}", (string id) =>
+app.MapGet("/api/users/{id}", (ApplicationContext db, string id) =>
 {
     // получаем пользователя по id
-    Person? user = users.FirstOrDefault(u => u.Id == id);
+    Person? person = db.Persons.FirstOrDefault(u => u.Id == id);
     // если не найден, отправляем статусный код и сообщение об ошибке
-    if (user == null) return Results.NotFound(new { message = "Пользователь не найден" });
+    if (person == null) return Results.NotFound(new { message = "Пользователь не найден" });
 
     // если пользователь найден, отправляем его
-    return Results.Json(user);
+    return Results.Json(person);
 });
 
-app.MapDelete("/api/users/{id}", (string id) =>
+app.MapDelete("/api/users/{id}", (ApplicationContext db, string id) =>
 {
     // получаем пользователя по id
-    Person? user = users.FirstOrDefault(u => u.Id == id);
+    Person? person = db.Persons.FirstOrDefault(u => u.Id == id);
 
     // если не найден, отправляем статусный код и сообщение об ошибке
-    if (user == null) return Results.NotFound(new { message = "Пользователь не найден" });
+    if (person == null) return Results.NotFound(new { message = "Пользователь не найден" });
 
     // если пользователь найден, удаляем его
-    users.Remove(user);
-    return Results.Json(user);
+    db.Persons.Remove(person);
+
+    return Results.Json(person);
 });
 
-app.MapPost("/api/users", (Person user) => {
+app.MapPost("/api/users", (ApplicationContext db, Person person) => {
 
     // устанавливаем id для нового пользователя
-    user.Id = Guid.NewGuid().ToString();
+    person.Id = Guid.NewGuid().ToString();
+
     // добавляем пользователя в список
-    users.Add(user);
-    return user;
+    db.Persons.Add(person);
+
+    return person;
 });
 
-app.MapPut("/api/users", (Person userData) => {
+app.MapPut("/api/users", (ApplicationContext db, Person userData) => {
 
     // получаем пользователя по id
-    var user = users.FirstOrDefault(u => u.Id == userData.Id);
+    var user = db.Persons.FirstOrDefault(u => u.Id == userData.Id);
     // если не найден, отправляем статусный код и сообщение об ошибке
     if (user == null) return Results.NotFound(new { message = "Пользователь не найден" });
     // если пользователь найден, изменяем его данные и отправляем обратно клиенту
@@ -81,6 +74,7 @@ app.MapPut("/api/users", (Person userData) => {
     user.Age = userData.Age;
     user.Name = userData.Name;
     user.Gender = userData.Gender;
+
     return Results.Json(user);
 });
 
