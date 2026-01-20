@@ -3,7 +3,7 @@
 using MyServer.Models;
 
 // начальные данные
-//List<Person> users = new List<Person>
+List<Person> users = new List<Person> { };
 //{
   //  new() { Id = Guid.NewGuid().ToString(), Name = "Tom", Age = 37 },
     //new() { Id = Guid.NewGuid().ToString(), Name = "Bob", Age = 41 },
