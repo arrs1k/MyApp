@@ -1,6 +1,7 @@
 
 
 using MyServer.Models;
+using Microsoft.EntityFrameworkCore;
 
 // начальные данные
 List<Person> users = new List<Person> { };
@@ -22,7 +23,10 @@ builder.Services.AddCors(options =>
     });
 });
 
+var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
+// добавляем контекст ApplicationContext в качестве сервиса в приложение
+builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection));
 
 var app = builder.Build();
 
