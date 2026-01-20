@@ -19,15 +19,20 @@ builder.Services.AddCors(options =>
 string connection = builder.Configuration.GetConnectionString("DefaultConnection"); //+
 
 // добавляем контекст ApplicationContext в качестве сервиса в приложение
-builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connection)); //+
+builder.Services.AddDbContext<MyAppContext>(options => options.UseNpgsql(connection)); //+
 
 var app = builder.Build();
 
 app.UseCors("AllowAll");
 
-app.MapGet("/api/users", (ApplicationContext db) => db.Persons.ToArray());
+app.MapGet("/api/users", async (MyAppContext context) =>
+{
+    var p = await context.Persons.ToListAsync();
 
-app.MapGet("/api/users/{id}", (ApplicationContext db, string id) =>
+    return Results.Json(p);
+});
+
+app.MapGet("/api/users/{id}", (MyAppContext db, string id) =>
 {
     // получаем пользователя по id
     Person? person = db.Persons.FirstOrDefault(u => u.Id == id);
@@ -38,7 +43,7 @@ app.MapGet("/api/users/{id}", (ApplicationContext db, string id) =>
     return Results.Json(person);
 });
 
-app.MapDelete("/api/users/{id}", (ApplicationContext db, string id) =>
+app.MapDelete("/api/users/{id}", (MyAppContext db, string id) =>
 {
     // получаем пользователя по id
     Person? person = db.Persons.FirstOrDefault(u => u.Id == id);
@@ -52,7 +57,7 @@ app.MapDelete("/api/users/{id}", (ApplicationContext db, string id) =>
     return Results.Json(person);
 });
 
-app.MapPost("/api/users", (ApplicationContext db, Person person) => {
+app.MapPost("/api/users", (MyAppContext db, Person person) => {
 
     // устанавливаем id для нового пользователя
     person.Id = Guid.NewGuid().ToString();
@@ -63,7 +68,7 @@ app.MapPost("/api/users", (ApplicationContext db, Person person) => {
     return person;
 });
 
-app.MapPut("/api/users", (ApplicationContext db, Person userData) => {
+app.MapPut("/api/users", (MyAppContext db, Person userData) => {
 
     // получаем пользователя по id
     var user = db.Persons.FirstOrDefault(u => u.Id == userData.Id);
