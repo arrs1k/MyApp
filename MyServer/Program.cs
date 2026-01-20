@@ -43,7 +43,7 @@ app.MapGet("/api/users/{id}", async (MyAppContext db, string id) =>
     return Results.Json(person);
 });
 
-app.MapDelete("/api/users/{id}", (MyAppContext db, string id) =>
+app.MapDelete("/api/users/{id}", async (MyAppContext db, string id) =>
 {
     // получаем пользователя по id
     Person? person = db.Persons.FirstOrDefault(u => u.Id == id);
@@ -53,6 +53,8 @@ app.MapDelete("/api/users/{id}", (MyAppContext db, string id) =>
 
     // если пользователь найден, удаляем его
     db.Persons.Remove(person);
+
+    await db.SaveChangesAsync();
 
     return Results.Json(person);
 });
